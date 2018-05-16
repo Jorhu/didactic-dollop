@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">PMM</string>
+
+    <!-- Strings de LoginActivity y de SignUpActivity -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Create account</string>
+    <string name="signup_link">No account yet? Create one</string>
+    <string name="login_link">Already a member? Login</string>
+    <string name="authentication_message">Authenticating…</string>
+    <string name="creating_account_message">Creating account…</string>
+
+    <!-- Strings de error del login y del sign up -->
+    <string name="error_login">Login failed</string>
+    <string name="error_signup">Sign up failed</string>
+    <string name="error_email">Enter a valid email address</string>
+    <string name="error_email_not_found">Email not found</string>
+    <string name="error_email_already_used">This email already exists</string>
+    <string name="error_password">Between 4 and 10 alphanumeric characters</string>
+    <string name="error_password_not_correct">Password not correct</string>
+
+    <!-- Strings de SandwichDetailsFragment y de item_sandwich.xml -->
+    <string name="sandwich_name">Name</string>
+    <string name="sandwich_price">Price</string>
+    <string name="sandwich_ingredients">Ingredients</string>
+
+    <!-- Strings de menu_main -->
+    <string name="my_profile">My profile</string>
+    <string name="my_order">My order</string>
+    <string name="about">About…</string>
+</resources>
