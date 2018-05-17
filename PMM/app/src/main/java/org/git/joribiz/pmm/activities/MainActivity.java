@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 
@@ -25,7 +24,9 @@ import org.git.joribiz.pmm.model.Sandwich;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
-        SandwichListAdapter.ItemClickListener, SandwichDetailsFragment.AddButtonClickListener {
+        SandwichListAdapter.ItemClickListener,
+        SandwichListAdapter.ItemLongClickListener,
+        SandwichDetailsFragment.AddButtonClickListener {
     private static final int REQUEST_USER = 0;
     private SandwichDetailsFragment sandwichDetailsFragment;
     private SandwichListAdapter sandwichListAdapter;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements
         // Creamos el adaptador y le añadimos los listeners
         sandwichListAdapter = new SandwichListAdapter(sandwiches);
         sandwichListAdapter.setItemClickListener(this);
+        sandwichListAdapter.setItemLongClickListener(this);
         // Cargamos el primer fragment
         SandwichListFragment sandwichListFragment = new SandwichListFragment();
         sandwichListFragment.setFragmentAdapter(sandwichListAdapter);
@@ -101,21 +103,25 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Hago uso de una biblioteca externa para gestionar el carrito de la compra
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-        // Hago uso de una biblioteca externa para gestionar el carrito de la compra
+
+        // Si el carrito tiene algún bocadillo...
         if (cartCount > 0) {
-            menu.findItem(R.id.shopping_cart).setVisible(false);
+            // Oculto el carrito de la compra vacío que no tiene animación
+            menu.findItem(R.id.empty_shopping_cart).setVisible(false);
+            // Este es el gestor de la animación del carrito
             ActionItemBadge.update(
                     this,
-                    menu.findItem(R.id.my_order),
+                    menu.findItem(R.id.shopping_cart),
                     getDrawable(R.mipmap.baseline_shopping_cart_white_24),
                     ActionItemBadge.BadgeStyles.RED,
                     cartCount
             );
         } else {
-            menu.findItem(R.id.shopping_cart).setVisible(true);
-            ActionItemBadge.hide(menu.findItem(R.id.my_order));
+            menu.findItem(R.id.empty_shopping_cart).setVisible(true);
+            ActionItemBadge.hide(menu.findItem(R.id.shopping_cart));
         }
         return true;
     }
@@ -123,7 +129,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.my_order:
+            case R.id.empty_shopping_cart:
+                //TODO
+            case R.id.shopping_cart:
                 // TODO
                 return true;
             case R.id.my_profile:
@@ -135,11 +143,6 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -159,6 +162,16 @@ public class MainActivity extends AppCompatActivity implements
                 transaction.commit();
             }
         }, 500);
+    }
+
+    /**
+     *  Este método es el que sobreescribe el evento onClick() de SandwichListAdapter.
+     */
+    @Override
+    public void onLongItemClick(int position) {
+        sandwichesOrdered.add(sandwichListAdapter.getItem(position));
+        cartCount++;
+        invalidateOptionsMenu();
     }
 
     /**

@@ -47,6 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Volvemos a la actividad de login
                 finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
     }
