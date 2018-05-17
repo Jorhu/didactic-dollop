@@ -16,6 +16,7 @@
 
         <!-- Logo de la app -->
         <ImageView
+            android:src="@drawable/ic_launcher_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
@@ -33,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:fontFamily="@font/roboto_thin"
+                android:fontFamily="@font/roboto"
                 android:hint="@string/email" />
         </android.support.design.widget.TextInputLayout>
 
@@ -45,12 +46,14 @@
             android:layout_marginBottom="8dp"
             app:passwordToggleEnabled="true"
             app:errorEnabled="true">
-            <EditText android:id="@+id/activity_sign_up_password"
+
+            <EditText
+                android:id="@+id/activity_sign_up_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:fontFamily="@font/roboto_thin"
-                android:hint="@string/password" />
+                android:fontFamily="@font/roboto"
+                android:hint="@string/password"
+                android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
 
         <!-- Botón para efectuar el sign up -->
@@ -62,7 +65,7 @@
             android:layout_marginBottom="24dp"
             android:padding="12dp"
             android:text="@string/signup_button"
-            android:fontFamily="@font/roboto_thin"/>
+            android:fontFamily="@font/roboto"/>
 
         <!-- Texto que enlaza con LoginActivity -->
         <TextView android:id="@+id/activity_sign_up_loginLink"
@@ -70,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:text="@string/login_link"
-            android:fontFamily="@font/roboto_thin"
+            android:fontFamily="@font/roboto"
             android:textSize="16sp"
             android:gravity="center" />
     </LinearLayout>

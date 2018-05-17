@@ -37,8 +37,6 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.activity_login_loginButton);
         TextView signupLink = findViewById(R.id.activity_login_signUpLink);
 
-        getSupportActionBar().hide();
-
         // Listener del botón de login
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
                 // Si el registro se ha llevado a cabo con éxito, volvemos a la actividad principal
-                this.finish();
+                onLoginSuccess(data.getStringExtra("email"));
             }
         }
     }
@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    onLoginSuccess();
+                    onLoginSuccess(email);
                 }
                 cursor.close();
                 sqLiteHelper.close();
@@ -139,9 +139,12 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Activa el botón de login de nuevo y envía al usuario a la actividad principal.
      */
-    private void onLoginSuccess() {
+    private void onLoginSuccess(String email) {
         loginButton.setEnabled(true);
-        // Volvemos a la actividad principal
+        // Volvemos a la actividad principal mandando el email del usuario
+        Intent data = new Intent();
+        data.putExtra("email", email);
+        setResult(RESULT_OK, data);
         finish();
     }
 

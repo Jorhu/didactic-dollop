@@ -20,7 +20,14 @@
     <string name="error_password">Between 4 and 10 alphanumeric characters</string>
     <string name="error_password_not_correct">Password not correct</string>
 
-    <!-- Strings del menú inferior de navegación -->
-    <string name="menu_home">Home</string>
+    <!-- Strings de SandwichDetailsFragment y de item_sandwich.xml -->
+    <string name="sandwich_name">Name</string>
+    <string name="sandwich_price">Price</string>
+    <string name="sandwich_ingredients">Ingredients</string>
+
+    <!-- Strings de menu_main -->
+    <string name="my_profile">My profile</string>
+    <string name="my_order">My order</string>
+    <string name="about">About…</string>
 
 </resources>

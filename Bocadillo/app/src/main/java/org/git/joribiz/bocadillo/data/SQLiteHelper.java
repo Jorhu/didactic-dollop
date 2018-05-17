@@ -28,7 +28,7 @@ public class SQLiteHelper extends SQLiteOpenHelper implements DBContract {
         db.execSQL(SandwichEntry.CREATE_TABLE);
         db.execSQL(OrderEntry.CREATE_TABLE);
         db.execSQL(SandwichOrderEntry.CREATE_TABLE);
-        db.execSQL("INSERT INTO user (email, password) VALUES (\"admin@gmail.com\", \"admin\")");
+        db.execSQL("INSERT INTO user (email, password) VALUES (\"admin@admin.com\", \"admin\")");
     }
 
     @Override

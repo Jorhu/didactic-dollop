@@ -1,4 +1,4 @@
-package org.git.joribiz.pmm.fragments;
+package org.git.joribiz.bocadillo.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,9 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.git.joribiz.pmm.R;
-import org.git.joribiz.pmm.activities.MainActivity;
-import org.git.joribiz.pmm.model.Sandwich;
+import org.git.joribiz.bocadillo.R;
+import org.git.joribiz.bocadillo.models.Sandwich;
 
 import java.util.Locale;
 
@@ -32,7 +31,6 @@ public class SandwichDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sandwich = getArguments().getParcelable("sandwich");
-        ((MainActivity)getActivity()).shouldDisplayHomeUp();
     }
 
     @Nullable

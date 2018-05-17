@@ -2,6 +2,7 @@ package org.git.joribiz.pmm.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -93,7 +94,7 @@ public class SignUpActivity extends AppCompatActivity {
                     });
                 } else {
                     userDAO.insertUser(new User(email, password));
-                    onSignUpSuccess();
+                    onSignUpSuccess(email);
                 }
                 cursor.close();
                 sqLiteHelper.close();
@@ -106,9 +107,11 @@ public class SignUpActivity extends AppCompatActivity {
      * Activa el botón de registro de nuevo y le comunica a LoginActivity que el usuario se ha
      * registrado con éxito.
      */
-    private void onSignUpSuccess() {
+    private void onSignUpSuccess(String email) {
         signUpButton.setEnabled(true);
-        setResult(RESULT_OK, null);
+        Intent data = new Intent();
+        data.putExtra("email", email);
+        setResult(RESULT_OK, data);
         finish();
     }
 

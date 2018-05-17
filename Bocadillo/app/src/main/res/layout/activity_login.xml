@@ -16,6 +16,7 @@
 
         <!-- Logo de la app -->
         <ImageView
+            android:src="@drawable/ic_launcher_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
@@ -34,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:fontFamily="@font/roboto_thin"
+                android:fontFamily="@font/roboto"
                 android:hint="@string/email" />
         </android.support.design.widget.TextInputLayout>
 
@@ -51,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:fontFamily="@font/roboto_thin"
+                android:fontFamily="@font/roboto"
                 android:hint="@string/password" />
         </android.support.design.widget.TextInputLayout>
 
@@ -63,7 +64,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
-            android:fontFamily="@font/roboto_thin"
+            android:fontFamily="@font/roboto"
             android:text="@string/login_button" />
 
         <!-- Texto que enlaza con SignUpActivity -->
@@ -74,7 +75,7 @@
             android:layout_marginBottom="24dp"
             android:gravity="center"
             android:textSize="16sp"
-            android:fontFamily="@font/roboto_thin"
+            android:fontFamily="@font/roboto"
             android:text="@string/signup_link"/>
     </LinearLayout>
 </ScrollView>

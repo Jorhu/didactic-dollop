@@ -1,4 +1,4 @@
-package org.git.joribiz.pmm.fragments;
+package org.git.joribiz.bocadillo.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,9 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.git.joribiz.pmm.R;
-import org.git.joribiz.pmm.activities.MainActivity;
-import org.git.joribiz.pmm.adapters.SandwichListAdapter;
+import org.git.joribiz.bocadillo.R;
+import org.git.joribiz.bocadillo.adapters.SandwichListAdapter;
 
 public class SandwichListFragment extends Fragment {
     private SandwichListAdapter sandwichListAdapter;

@@ -29,6 +29,5 @@ dependencies {
 
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+    implementation 'com.rowland.cartcounter:CartCounter:1.0.0-beta-2'
 }
