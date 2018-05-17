@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements
         sandwichListFragment.setFragmentAdapter(sandwichListAdapter);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_main_container, sandwichListFragment);
-        transaction.addToBackStack("");
         transaction.commit();
 
         // Instanciamos el array para empezar a realizar el pedido y reniciamos el contador
@@ -128,11 +127,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.empty_shopping_cart:
-                //TODO
+                intent = new Intent(this, NewOrderActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.shopping_cart:
-                // TODO
+                intent = new Intent(this, NewOrderActivity.class);
+                intent.putParcelableArrayListExtra("sandwiches", sandwichesOrdered);
+                startActivity(intent);
                 return true;
             case R.id.my_profile:
                 // TODO
@@ -182,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements
         /* Si hemos llegado hasta aquí, significa que ya tenemos una instancia del fragment y
         podemos pedirle que nos devuelva el bocadillo pedido por el usuario */
         sandwichesOrdered.add(sandwichDetailsFragment.getSandwich());
+        // Incrementamos el número de bocadillos en el carrito
         cartCount++;
         // Volvemos a dibujar el menú
         invalidateOptionsMenu();
