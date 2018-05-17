@@ -3,16 +3,16 @@ package org.git.joribiz.pmm.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import com.mikepenz.actionitembadge.library.ActionItemBadge;
 
 import org.git.joribiz.pmm.R;
 import org.git.joribiz.pmm.adapters.SandwichListAdapter;
@@ -21,28 +21,30 @@ import org.git.joribiz.pmm.data.SandwichDAO;
 import org.git.joribiz.pmm.fragments.SandwichDetailsFragment;
 import org.git.joribiz.pmm.fragments.SandwichListFragment;
 import org.git.joribiz.pmm.model.Sandwich;
-import org.git.joribiz.pmm.model.User;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
-        FragmentManager.OnBackStackChangedListener,
-        SandwichListAdapter.ItemClickListener {
+        SandwichListAdapter.ItemClickListener, SandwichDetailsFragment.AddButtonClickListener {
     private static final int REQUEST_USER = 0;
-    private String userEmail;
+    private SandwichDetailsFragment sandwichDetailsFragment;
     private SandwichListAdapter sandwichListAdapter;
+    // En esta varible se guardará el email del usuario que ha accedido a la app
+    private String userEmail;
+    // Este array lo usaremos para preparar el pedido del usuario
+    private ArrayList<Sandwich> sandwichesOrdered;
+    // Con esta variable llevaremos la cuenta de bocadillos pedidos por el usuario
+    private int cartCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-         // Redirigimos al usuario al login
-         Intent intent = new Intent(this, LoginActivity.class);
-         startActivityForResult(intent, REQUEST_USER);
 
-        // Añadimos el listener para los cambios en el back stack
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
+         /*// Redirigimos al usuario al login
+         Intent intent = new Intent(this, LoginActivity.class);
+         startActivityForResult(intent, REQUEST_USER);*/
 
         // Insertamos los datos de prueba en la base da datos
         SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(this);
@@ -72,6 +74,10 @@ public class MainActivity extends AppCompatActivity implements
         transaction.replace(R.id.activity_main_container, sandwichListFragment);
         transaction.addToBackStack("");
         transaction.commit();
+
+        // Instanciamos el array para empezar a realizar el pedido y reniciamos el contador
+        sandwichesOrdered = new ArrayList<>();
+        cartCount = 0;
     }
 
     @Override
@@ -97,12 +103,29 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+        // Hago uso de una biblioteca externa para gestionar el carrito de la compra
+        if (cartCount > 0) {
+            menu.findItem(R.id.shopping_cart).setVisible(false);
+            ActionItemBadge.update(
+                    this,
+                    menu.findItem(R.id.my_order),
+                    getDrawable(R.mipmap.baseline_shopping_cart_white_24),
+                    ActionItemBadge.BadgeStyles.RED,
+                    cartCount
+            );
+        } else {
+            menu.findItem(R.id.shopping_cart).setVisible(true);
+            ActionItemBadge.hide(menu.findItem(R.id.my_order));
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.my_order:
+                // TODO
+                return true;
             case R.id.my_profile:
                 // TODO
                 return true;
@@ -117,21 +140,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
-        // TODO
-    }
-
-    /**
-     * Cuando se pulsa el botón back se llama a este método para ejecutar el popBackStack().
-     */
-    @Override
-    public boolean onSupportNavigateUp() {
-        getSupportFragmentManager().popBackStack();
-        return true;
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        shouldDisplayHomeUp();
     }
 
     /**
@@ -144,9 +152,9 @@ public class MainActivity extends AppCompatActivity implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                SandwichDetailsFragment fragment = SandwichDetailsFragment.newInstance(sandwich);
+                sandwichDetailsFragment = SandwichDetailsFragment.newInstance(sandwich);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.activity_main_container, fragment);
+                transaction.replace(R.id.activity_main_container, sandwichDetailsFragment);
                 transaction.addToBackStack("");
                 transaction.commit();
             }
@@ -154,10 +162,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Habilita el botón Up solo si hay elementos en el back stack, sin contar el primer fragment.
+     * Este método es el que sobreescribe el evento onClick() de SandwichDetailsFragment.
      */
-    public void shouldDisplayHomeUp(){
-        boolean canback = getSupportFragmentManager().getBackStackEntryCount() > 1;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(canback);
+    @Override
+    public void onAddButtonClick() {
+        /* Si hemos llegado hasta aquí, significa que ya tenemos una instancia del fragment y
+        podemos pedirle que nos devuelva el bocadillo pedido por el usuario */
+        sandwichesOrdered.add(sandwichDetailsFragment.getSandwich());
+        cartCount++;
+        // Volvemos a dibujar el menú
+        invalidateOptionsMenu();
     }
 }
