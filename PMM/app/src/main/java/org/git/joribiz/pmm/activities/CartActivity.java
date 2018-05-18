@@ -61,15 +61,18 @@ public class CartActivity extends AppCompatActivity implements
         checkoutFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // TODO
-                    }
-                },3000);
+
             }
         });
+    }
 
+    /**
+     * Sobreescribo este método para asi poder controlar el carrito del usuario y que sea
+     * consistente entre actividades.
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     /**

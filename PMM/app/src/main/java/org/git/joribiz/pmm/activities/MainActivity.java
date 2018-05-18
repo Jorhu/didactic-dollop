@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 
 import org.git.joribiz.pmm.R;
@@ -22,12 +24,15 @@ import org.git.joribiz.pmm.fragments.SandwichListFragment;
 import org.git.joribiz.pmm.model.Sandwich;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         SandwichListAdapter.ItemClickListener,
         SandwichListAdapter.ItemLongClickListener,
         SandwichDetailsFragment.AddButtonClickListener {
     private static final int REQUEST_USER = 0;
+    AHBottomNavigation bottomNavigation;
     private SandwichDetailsFragment sandwichDetailsFragment;
     private SandwichListAdapter sandwichListAdapter;
     // En esta varible se guardará el email del usuario que ha accedido a la app
@@ -35,13 +40,31 @@ public class MainActivity extends AppCompatActivity implements
     // Este array lo usaremos para preparar el pedido del usuario
     private ArrayList<Sandwich> sandwichesOrdered;
     // Con esta variable llevaremos la cuenta de bocadillos pedidos por el usuario
-    private int cartCount;
+    private int cartCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Configuración de la barra de navegación inferior
+        bottomNavigation = findViewById(R.id.activity_main_bottom_navigation);
+        // Creamos los objetos que irán en la barra de navegación y los añadimos
+        AHBottomNavigationItem[] items =  {
+                new AHBottomNavigationItem(
+                        R.string.my_profile,
+                        R.mipmap.baseline_account_circle_white_24,
+                        R.color.colorAccent),
+                new AHBottomNavigationItem(
+                        R.string.menu,
+                        R.mipmap.baseline_contact_support_white_24,
+                        R.color.colorAccent),
+                new AHBottomNavigationItem(
+                        R.string.my_order,
+                        R.mipmap.baseline_shopping_cart_white_24,
+                        R.color.colorAccent)
+        };
+        bottomNavigation.addItems(Arrays.asList(items));
 
          /*// Redirigimos al usuario al login
          Intent intent = new Intent(this, LoginActivity.class);
@@ -78,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements
 
         // Instanciamos el array para empezar a realizar el pedido y reniciamos el contador
         sandwichesOrdered = new ArrayList<>();
-        cartCount = 0;
     }
 
     @Override
@@ -188,7 +210,15 @@ public class MainActivity extends AppCompatActivity implements
         sandwichesOrdered.add(sandwichDetailsFragment.getSandwich());
         // Incrementamos el número de bocadillos en el carrito
         cartCount++;
-        // Volvemos a dibujar el menú
-        invalidateOptionsMenu();
+        // Actualizamos la notificación del carrito
+        bottomNavigation.setNotification(Integer.toString(cartCount), 2);
+    }
+
+    public int getCartCount() {
+        return cartCount;
+    }
+
+    public void setCartCount(int cartCount) {
+        this.cartCount = cartCount;
     }
 }
