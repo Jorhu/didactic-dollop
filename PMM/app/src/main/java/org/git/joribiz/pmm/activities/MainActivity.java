@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent;
         switch (item.getItemId()) {
             case R.id.empty_shopping_cart:
-                intent = new Intent(this, NewOrderActivity.class);
+                intent = new Intent(this, CartActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.shopping_cart:
-                intent = new Intent(this, NewOrderActivity.class);
+                intent = new Intent(this, CartActivity.class);
                 intent.putParcelableArrayListExtra("sandwiches", sandwichesOrdered);
                 startActivity(intent);
                 return true;

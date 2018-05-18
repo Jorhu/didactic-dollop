@@ -11,6 +11,10 @@
     <string name="authentication_message">Authenticating…</string>
     <string name="creating_account_message">Creating account…</string>
 
+    <!-- Strings de CartActivity -->
+    <string name="empty_cart">You haven\'t ordered anything yet!</string>
+    <string name="total_price">Total:</string>
+
     <!-- Strings de error del login y del sign up -->
     <string name="error_login">Login failed</string>
     <string name="error_signup">Sign up failed</string>

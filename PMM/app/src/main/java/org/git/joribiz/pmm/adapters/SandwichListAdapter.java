@@ -19,52 +19,6 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
     private ItemClickListener itemClickListener;
     private ItemLongClickListener itemLongClickListener;
 
-    /**
-     * Cualquier actividad que use este adaptador, podrá disponer de esta interfaz para responder
-     * a los clicks del usuario.
-     */
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
-    /**
-     * Interfaz para responder al click sostenido sobre un item de la lista.
-     */
-    public interface ItemLongClickListener {
-        void onLongItemClick(int position);
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
-        ImageView sandwichPhoto;
-        TextView sandwichName;
-        TextView sandwichPrice;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            sandwichPhoto = itemView.findViewById(R.id.item_sandwich_photo);
-            sandwichName = itemView.findViewById(R.id.item_sandwich_name);
-            sandwichPrice = itemView.findViewById(R.id.item_sandwich_price);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (itemClickListener != null) {
-                itemClickListener.onItemClick(view, getAdapterPosition());
-            }
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            if (itemLongClickListener != null) {
-                itemLongClickListener.onLongItemClick(getAdapterPosition());
-            }
-            return true;
-        }
-    }
-
     public SandwichListAdapter(ArrayList<Sandwich> sandwiches) {
         this.sandwiches = new ArrayList<>();
         this.sandwiches.addAll(sandwiches);
@@ -109,5 +63,51 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
 
     public void setItemLongClickListener(ItemLongClickListener itemLongClickListener) {
         this.itemLongClickListener = itemLongClickListener;
+    }
+
+    /**
+     * Cualquier actividad que use este adaptador, podrá disponer de esta interfaz para responder
+     * a los clicks del usuario.
+     */
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    /**
+     * Interfaz para responder al click sostenido sobre un item de la lista.
+     */
+    public interface ItemLongClickListener {
+        void onLongItemClick(int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
+        ImageView sandwichPhoto;
+        TextView sandwichName;
+        TextView sandwichPrice;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            sandwichPhoto = itemView.findViewById(R.id.item_sandwich_photo);
+            sandwichName = itemView.findViewById(R.id.item_sandwich_name);
+            sandwichPrice = itemView.findViewById(R.id.item_sandwich_price);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (itemClickListener != null) {
+                itemClickListener.onItemClick(view, getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (itemLongClickListener != null) {
+                itemLongClickListener.onLongItemClick(getAdapterPosition());
+            }
+            return true;
+        }
     }
 }
