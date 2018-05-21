@@ -48,9 +48,9 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
     }
 
     /**
-     * Método auxiliar para obtener el ítem clickado por el usuario.
+     * Método auxiliar para obtener el bocadilloclickado por el usuario.
      */
-    public Sandwich getItem(int position) {
+    public Sandwich getSandwich(int position) {
         return sandwiches.get(position);
     }
 

@@ -48,7 +48,9 @@ public class SandwichDetailsFragment extends Fragment implements View.OnClickLis
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sandwich = getArguments().getParcelable("sandwich");
+        if (getArguments() != null) {
+            sandwich = getArguments().getParcelable("sandwich");
+        }
     }
 
     @Nullable

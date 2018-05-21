@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHolder> {
-    ArrayList<Sandwich> sandwiches;
+    ArrayList<Sandwich> sandwichesOrdered;
     private RemoveItemListener removeItemListener;
 
-    public CartListAdapter(ArrayList<Sandwich> sandwiches) {
-        this.sandwiches = new ArrayList<>();
-        this.sandwiches.addAll(sandwiches);
+    public CartListAdapter(ArrayList<Sandwich> sandwichesOrdered) {
+        this.sandwichesOrdered = new ArrayList<>();
+        this.sandwichesOrdered.addAll(sandwichesOrdered);
     }
 
     @NonNull
@@ -33,7 +33,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Sandwich sandwich = sandwiches.get(position);
+        Sandwich sandwich = sandwichesOrdered.get(position);
         holder.sandwichPhoto.setImageResource(sandwich.getPhotoId());
         holder.sandwichName.setText(sandwich.getName());
         holder.sandwichPrice.setText(
@@ -42,21 +42,46 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return sandwiches.size();
+        return sandwichesOrdered.size();
     }
 
-    public Sandwich getItem(int position) {
-        return sandwiches.get(position);
-    }
-
-    public void removeItem(int position) {
-        sandwiches.remove(position);
-        // Este método es para hacer uso de las animaciones predeterminadas de RecyclerView
-        notifyItemRemoved(position);
+    public Sandwich getSandwich(int position) {
+        return sandwichesOrdered.get(position);
     }
 
     public void setRemoveItemListener(RemoveItemListener removeItemListener) {
         this.removeItemListener = removeItemListener;
+    }
+
+    /**
+     * Añade un bocadillo a la lista de bocadillos pedidos.
+     */
+    public void addSandwich(Sandwich sandwich) {
+        sandwichesOrdered.add(sandwich);
+        /* Este método es para notificar que se ha añadido un item a la lista y que por tanto esta
+        debe recargarse  */
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Elimina un bocadillo de la lista de bocadillos pedidos.
+     */
+    public void removeSandwich(int position) {
+        sandwichesOrdered.remove(position);
+       /* Este método es para notificar que se ha eliminado un item de la lista y hacer uso de las
+        animaciones predeterminadas de RecyclerView */
+        notifyItemRemoved(position);
+    }
+
+    /**
+     * Calcula el coste total de los bocadillos pedidos.
+     */
+    public float calculateTotalPrice() {
+        float totalPrice = 0;
+        for (Sandwich sandwich : sandwichesOrdered) {
+            totalPrice += sandwich.getPrice();
+        }
+        return totalPrice;
     }
 
     public interface RemoveItemListener {

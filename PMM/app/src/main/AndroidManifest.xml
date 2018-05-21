@@ -21,9 +21,6 @@
         <activity
             android:name=".activities.SignUpActivity"
             android:parentActivityName=".activities.LoginActivity"/>
-        <activity
-            android:name=".activities.CartActivity"
-            android:parentActivityName=".activities.MainActivity"/>
     </application>
 
 </manifest>

@@ -2,8 +2,11 @@ package org.git.joribiz.pmm.activities;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,58 +16,73 @@ import android.view.View;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
-import com.mikepenz.actionitembadge.library.ActionItemBadge;
 
 import org.git.joribiz.pmm.R;
+import org.git.joribiz.pmm.adapters.BottomNavigationAdapter;
+import org.git.joribiz.pmm.adapters.CartListAdapter;
 import org.git.joribiz.pmm.adapters.SandwichListAdapter;
 import org.git.joribiz.pmm.data.SQLiteHelper;
 import org.git.joribiz.pmm.data.SandwichDAO;
+import org.git.joribiz.pmm.fragments.CartFragment;
+import org.git.joribiz.pmm.fragments.ProfileFragment;
 import org.git.joribiz.pmm.fragments.SandwichDetailsFragment;
 import org.git.joribiz.pmm.fragments.SandwichListFragment;
 import org.git.joribiz.pmm.model.Sandwich;
+import org.git.joribiz.pmm.pagers.NoSwipePager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         SandwichListAdapter.ItemClickListener,
         SandwichListAdapter.ItemLongClickListener,
-        SandwichDetailsFragment.AddButtonClickListener {
+        CartListAdapter.RemoveItemListener,
+        SandwichDetailsFragment.AddButtonClickListener,
+        CartFragment.CheckoutButtonClickListener{
     private static final int REQUEST_USER = 0;
-    AHBottomNavigation bottomNavigation;
+
+    // BottomNavigation Bar, de una librería externa
+    private AHBottomNavigation bottomNavigation;
+
+    // ViewPager personalizado
+    private NoSwipePager viewPager;
+
+    // Adaptador del ViewPager
+    private BottomNavigationAdapter pageAdapter;
+
+    // Fragments
+    private ProfileFragment profileFragment;
+    private SandwichListFragment sandwichListFragment;
     private SandwichDetailsFragment sandwichDetailsFragment;
+    private CartFragment cartFragment;
+
+    // Adaptadores de los fragments
     private SandwichListAdapter sandwichListAdapter;
+    private CartListAdapter cartListAdapter;
+
     // En esta varible se guardará el email del usuario que ha accedido a la app
     private String userEmail;
-    // Este array lo usaremos para preparar el pedido del usuario
+
+    // Para preparar el pedido del usuario
     private ArrayList<Sandwich> sandwichesOrdered;
+
+    // Para almacenar los bocadillos obtneidos de la base de datos
+    private ArrayList<Sandwich> sandwiches;
+
+    // Para llevar la cuenta del precio del pedido del usuario
+    private float orderPrice;
+
     // Con esta variable llevaremos la cuenta de bocadillos pedidos por el usuario
     private int cartCount = 0;
+
+    // Para controlar si el usuario está viendo los detalles de un bocadillo o no
+    private boolean showingDetails = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Configuración de la barra de navegación inferior
         bottomNavigation = findViewById(R.id.activity_main_bottom_navigation);
-        // Creamos los objetos que irán en la barra de navegación y los añadimos
-        AHBottomNavigationItem[] items =  {
-                new AHBottomNavigationItem(
-                        R.string.my_profile,
-                        R.mipmap.baseline_account_circle_white_24,
-                        R.color.colorAccent),
-                new AHBottomNavigationItem(
-                        R.string.menu,
-                        R.mipmap.baseline_contact_support_white_24,
-                        R.color.colorAccent),
-                new AHBottomNavigationItem(
-                        R.string.my_order,
-                        R.mipmap.baseline_shopping_cart_white_24,
-                        R.color.colorAccent)
-        };
-        bottomNavigation.addItems(Arrays.asList(items));
 
          /*// Redirigimos al usuario al login
          Intent intent = new Intent(this, LoginActivity.class);
@@ -79,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements
         Cursor cursor = sandwichDAO.getAllSandwiches();
 
         // Obtenemos un array con todos los bocadillos
-        ArrayList<Sandwich> sandwiches = new ArrayList<>();
+        sandwiches = new ArrayList<>();
         while (cursor.moveToNext()) {
             sandwiches.add(new Sandwich(cursor));
         }
@@ -88,25 +106,21 @@ public class MainActivity extends AppCompatActivity implements
         sqLiteHelper.close();
         cursor.close();
 
-        // Creamos el adaptador y le añadimos los listeners
-        sandwichListAdapter = new SandwichListAdapter(sandwiches);
-        sandwichListAdapter.setItemClickListener(this);
-        sandwichListAdapter.setItemLongClickListener(this);
-        // Cargamos el primer fragment
-        SandwichListFragment sandwichListFragment = new SandwichListFragment();
-        sandwichListFragment.setFragmentAdapter(sandwichListAdapter);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.activity_main_container, sandwichListFragment);
-        transaction.commit();
 
-        // Instanciamos el array para empezar a realizar el pedido y reniciamos el contador
+        // Ponemos el precio del pedido a 0
+        orderPrice = 0;
+        // Instanciamos el array para empezar a realizar el pedido
         sandwichesOrdered = new ArrayList<>();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // TODO: Mover la consulta a la base de datos aquí
+        // Inicializamos y configuramos los adapters
+        setupAdapters();
+
+        // Inicializamos y configuramos los fragments
+        setupFragments();
+
+        // Configuramos la Navigation Bar
+        setupViewPager();
+        setupBottomNavigation();
     }
 
     /**
@@ -122,47 +136,30 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Controla el comportamiento de la app al pulsar el botón back
+     */
+    @Override
+    public void onBackPressed() {
+        // Si se están viendo los detalles de algún bocadillo, volvemos a la lista de bocadillos
+        if (showingDetails) {
+            showingDetails = false;
+            viewPager.setCurrentItem(1);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Hago uso de una biblioteca externa para gestionar el carrito de la compra
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-
-        // Si el carrito tiene algún bocadillo...
-        if (cartCount > 0) {
-            // Oculto el carrito de la compra vacío que no tiene animación
-            menu.findItem(R.id.empty_shopping_cart).setVisible(false);
-            // Este es el gestor de la animación del carrito
-            ActionItemBadge.update(
-                    this,
-                    menu.findItem(R.id.shopping_cart),
-                    getDrawable(R.mipmap.baseline_shopping_cart_white_24),
-                    ActionItemBadge.BadgeStyles.RED,
-                    cartCount
-            );
-        } else {
-            menu.findItem(R.id.empty_shopping_cart).setVisible(true);
-            ActionItemBadge.hide(menu.findItem(R.id.shopping_cart));
-        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
         switch (item.getItemId()) {
-            case R.id.empty_shopping_cart:
-                intent = new Intent(this, CartActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.shopping_cart:
-                intent = new Intent(this, CartActivity.class);
-                intent.putParcelableArrayListExtra("sandwiches", sandwichesOrdered);
-                startActivity(intent);
-                return true;
-            case R.id.my_profile:
-                // TODO
-                return true;
             case R.id.about:
                 // TODO
                 return true;
@@ -172,53 +169,181 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     *  Este método es el que sobreescribe el evento onClick() de SandwichListAdapter.
+     *  Sobreescribe el evento onClick() de SandwichListAdapter.
      */
     @Override
     public void onItemClick(View view, final int position) {
-        final Sandwich sandwich = sandwichListAdapter.getItem(position);
+        Sandwich sandwich = sandwichListAdapter.getSandwich(position);
+
+        // Creamos una nueva instancia de SandwichDetailsFragment
+        sandwichDetailsFragment = SandwichDetailsFragment.newInstance(sandwich);
+
+        // Comprobamos si al adaptador ya se le ha añadido una instancia de SandwichDetailsFragment
+        if (pageAdapter.getCount() == 3) {
+            pageAdapter.addFragment(sandwichDetailsFragment);
+        } else {
+            // Reemplazamos la antigua instancia de SandwichDetails
+            pageAdapter.setFragment(3, sandwichDetailsFragment);
+        }
+
         // Retrasamos el cambio de fragment para que la animación al hacer click se reproduzca
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                sandwichDetailsFragment = SandwichDetailsFragment.newInstance(sandwich);
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.activity_main_container, sandwichDetailsFragment);
-                transaction.addToBackStack("");
-                transaction.commit();
+                showingDetails = true;
+                viewPager.setCurrentItem(3);
             }
         }, 500);
     }
 
     /**
-     *  Este método es el que sobreescribe el evento onClick() de SandwichListAdapter.
+     *  Sobreescribe el evento onLongClick() de SandwichListAdapter.
      */
     @Override
     public void onLongItemClick(int position) {
-        sandwichesOrdered.add(sandwichListAdapter.getItem(position));
+        sandwichesOrdered.add(sandwichListAdapter.getSandwich(position));
+        cartListAdapter.addSandwich(sandwichListAdapter.getSandwich(position));
+
+        // Incrementamos el número de bocadillos en el carrito y actualizamos la notificación
         cartCount++;
-        invalidateOptionsMenu();
+        setCartNotification(cartCount);
+
+        orderPrice = cartListAdapter.calculateTotalPrice();
+        cartFragment.setTotalPriceText(orderPrice);
     }
 
     /**
-     * Este método es el que sobreescribe el evento onClick() de SandwichDetailsFragment.
+     * Sobreescribe el evento onClick() de SandwichDetailsFragment.
      */
     @Override
     public void onAddButtonClick() {
         /* Si hemos llegado hasta aquí, significa que ya tenemos una instancia del fragment y
         podemos pedirle que nos devuelva el bocadillo pedido por el usuario */
         sandwichesOrdered.add(sandwichDetailsFragment.getSandwich());
-        // Incrementamos el número de bocadillos en el carrito
+        cartListAdapter.addSandwich(sandwichDetailsFragment.getSandwich());
+
+
         cartCount++;
-        // Actualizamos la notificación del carrito
-        bottomNavigation.setNotification(Integer.toString(cartCount), 2);
+        setCartNotification(cartCount);
+
+        // Actualizamos el precio del pedido
+        orderPrice = cartListAdapter.calculateTotalPrice();
+        cartFragment.setTotalPriceText(orderPrice);
     }
 
-    public int getCartCount() {
-        return cartCount;
+    /**
+     * Sobreescribe el evento onClick() de CartListAdapter.
+     */
+    @Override
+    public void onRemoveItemClick(View view, final int position) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sandwichesOrdered.remove(position);
+                cartListAdapter.removeSandwich(position);
+
+                cartCount--;
+                setCartNotification(cartCount);
+
+                orderPrice = cartListAdapter.calculateTotalPrice();
+                cartFragment.setTotalPriceText(orderPrice);
+            }
+        }, 300);
     }
 
-    public void setCartCount(int cartCount) {
-        this.cartCount = cartCount;
+    /**
+     * Sobreescribe el evento onClick() de CartFragment.
+     */
+    @Override
+    public void onCheckoutButtonClick() {
+        // TODO
+    }
+
+    /**
+     * Configuración de los fragments
+     */
+    private void setupAdapters() {
+        sandwichListAdapter = new SandwichListAdapter(sandwiches);
+        cartListAdapter = new CartListAdapter(sandwichesOrdered);
+
+        sandwichListAdapter.setItemClickListener(this);
+        sandwichListAdapter.setItemLongClickListener(this);
+        cartListAdapter.setRemoveItemListener(this);
+    }
+
+    /**
+     * Configuración de los fragments.
+     */
+    private void setupFragments() {
+        profileFragment = new ProfileFragment();
+        sandwichListFragment = new SandwichListFragment();
+        cartFragment = new CartFragment();
+
+        sandwichListFragment.setSandwichListAdapter(sandwichListAdapter);
+        cartFragment.setCartListAdapter(cartListAdapter);
+    }
+
+    /**
+     * Configuración del ViewPager.
+     */
+    private void setupViewPager() {
+        viewPager = findViewById(R.id.activity_main_container);
+        viewPager.setPagingEnabled(false);
+        pageAdapter = new BottomNavigationAdapter(getSupportFragmentManager());
+
+        pageAdapter.addFragment(profileFragment);
+        pageAdapter.addFragment(sandwichListFragment);
+        pageAdapter.addFragment(cartFragment);
+
+        viewPager.setAdapter(pageAdapter);
+    }
+
+    /**
+     * Configuración de la Bottom Navigation Bar para poder usarla.
+     */
+    private void setupBottomNavigation() {
+        // Listener para manejar el cambio de pestañas
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                // Si no se selecciona un fragment que ya estuviese seleccionado...
+                if (!wasSelected) {
+                    // El usuario ya no está viendo los detalles de un bocadillo
+                    showingDetails = false;
+                    viewPager.setCurrentItem(position);
+                }
+                return true;
+            }
+        });
+
+        // Creamos los objetos que irán en la barra de navegación y los añadimos
+        AHBottomNavigationItem[] items =  {
+                new AHBottomNavigationItem(
+                        getString(R.string.my_profile),
+                        R.mipmap.baseline_account_circle_white_24),
+                new AHBottomNavigationItem(
+                        getString(R.string.menu),
+                        R.mipmap.baseline_contact_support_white_24),
+                new AHBottomNavigationItem(
+                        getString(R.string.my_order),
+                        R.mipmap.baseline_shopping_cart_white_24)
+        };
+        bottomNavigation.addItems(Arrays.asList(items));
+
+        // Posición por defecto de la Bottom Navigation Bar
+        bottomNavigation.setCurrentItem(1);
+    }
+
+    /**
+     * Controla y estable las notificaciones del carrito de la compra.
+     */
+    public void setCartNotification(int cartCount) {
+        String notification;
+        if (cartCount == 0) {
+            notification = "";
+        } else {
+            notification = Integer.toString(cartCount);
+        }
+        bottomNavigation.setNotification(notification, 2);
     }
 }

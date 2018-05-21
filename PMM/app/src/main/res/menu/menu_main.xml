@@ -4,30 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/my_profile"
-        android:title="@string/my_profile"
-        android:icon="@mipmap/baseline_account_circle_white_24"
-        app:showAsAction="always"/>
-
-    <!-- Este icono se mostrará cuando no haya nada en el carrito -->
-    <item
-        android:id="@+id/empty_shopping_cart"
-        android:title="@string/my_order"
-        android:icon="@mipmap/baseline_shopping_cart_white_24"
-        app:showAsAction="always"/>
-
-    <!-- Este se mostrará cuando el carrito contenga algo, y está animado -->
-    <item
-        android:id="@+id/shopping_cart"
-        android:title="@string/my_order"
-        android:icon="@mipmap/baseline_shopping_cart_white_24"
-        android:actionLayout="@layout/menu_action_item_badge"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/about"
         android:title="@string/about"
         android:icon="@mipmap/baseline_contact_support_white_24"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
 </menu>

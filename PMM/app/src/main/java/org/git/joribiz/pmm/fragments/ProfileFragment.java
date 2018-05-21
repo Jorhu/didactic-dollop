@@ -11,13 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.git.joribiz.pmm.R;
-import org.git.joribiz.pmm.activities.MainActivity;
-import org.git.joribiz.pmm.adapters.SandwichListAdapter;
 
-public class SandwichListFragment extends Fragment {
-    private SandwichListAdapter sandwichListAdapter;
-
-    public SandwichListFragment() {}
+public class ProfileFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,19 +23,11 @@ public class SandwichListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sandwich_list, container, false);
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView recyclerView = view.findViewById(R.id.fragment_sandwich_list_recycler);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(sandwichListAdapter);
-    }
-
-    public void setSandwichListAdapter(SandwichListAdapter sandwichListAdapter) {
-        this.sandwichListAdapter = sandwichListAdapter;
     }
 }
