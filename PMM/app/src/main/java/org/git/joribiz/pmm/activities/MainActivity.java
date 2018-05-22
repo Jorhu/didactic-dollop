@@ -21,6 +21,7 @@ import org.git.joribiz.pmm.R;
 import org.git.joribiz.pmm.adapters.BottomNavigationAdapter;
 import org.git.joribiz.pmm.adapters.CartListAdapter;
 import org.git.joribiz.pmm.adapters.SandwichListAdapter;
+import org.git.joribiz.pmm.adapters.UserOrderAdapter;
 import org.git.joribiz.pmm.data.OrderDAO;
 import org.git.joribiz.pmm.data.SQLiteHelper;
 import org.git.joribiz.pmm.data.SandwichDAO;
@@ -43,9 +44,6 @@ public class MainActivity extends AppCompatActivity implements
         CartListAdapter.RemoveItemListener,
         SandwichDetailsFragment.AddButtonClickListener,
         CartFragment.CheckoutButtonClickListener{
-    // TODO: Refactorizar todas las constantes a su propia clase estática
-    private static final int REQUEST_USER = 0;
-
     // BottomNavigation Bar, de una librería externa
     private AHBottomNavigation bottomNavigation;
 
@@ -62,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements
     private CartFragment cartFragment;
 
     // Adaptadores de los fragments
+    private UserOrderAdapter userOrderAdapter;
     private SandwichListAdapter sandwichListAdapter;
     private CartListAdapter cartListAdapter;
 
@@ -99,27 +98,9 @@ public class MainActivity extends AppCompatActivity implements
         sandwichesOrdered = new ArrayList<>();
         orderPrice = 0;
 
-        SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(getApplicationContext());
-        UserDAO userDAO = new UserDAO(sqLiteHelper);
-        SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
-        OrderDAO orderDAO = new OrderDAO(sqLiteHelper);
-
-        Cursor cursor = sandwichDAO.getAllSandwiches();
-        if (cursor.moveToFirst()) {
-            while (cursor.moveToNext()) {
-                sandwiches.add(new Sandwich(cursor));
-            }
-        }
-
-        int userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
-        cursor = orderDAO.getOrderByUserID(userID);
-        if (cursor.moveToFirst()) {
-            while (cursor.moveToNext()) {
-                userOrders.add(new Order(cursor));
-            }
-        }
-        sqLiteHelper.close();
-        cursor.close();
+        /* Inicializamos los datos consultando la base de datos
+        TODO: ¿Hacer una tarea asíncrona para consultar la base de datos? */
+        setupData();
 
         // Inicializamos y configuramos los adapters
         setupAdapters();
@@ -130,8 +111,6 @@ public class MainActivity extends AppCompatActivity implements
         // Configuramos la Navigation Bar
         setupViewPager();
         setupBottomNavigation();
-
-
     }
 
     /**
@@ -144,8 +123,8 @@ public class MainActivity extends AppCompatActivity implements
             showingDetails = false;
             viewPager.setCurrentItem(1);
         } else {
-            // Si no, comportamiento normal
-            super.onBackPressed();
+            // Si no, comportamiento normal pero impidiendo volver al login
+            moveTaskToBack(true);
         }
     }
 
@@ -258,9 +237,37 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
+     * Realiza la consulta a la base de datos para obtener todos los datos necesarios.
+     */
+    private void setupData() {
+        SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(getApplicationContext());
+        UserDAO userDAO = new UserDAO(sqLiteHelper);
+        SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
+        OrderDAO orderDAO = new OrderDAO(sqLiteHelper);
+
+        Cursor cursor = sandwichDAO.getAllSandwiches();
+        if (cursor.moveToFirst()) {
+            while (cursor.moveToNext()) {
+                sandwiches.add(new Sandwich(cursor));
+            }
+        }
+
+        int userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
+        cursor = orderDAO.getOrderByUserID(userID);
+        if (cursor.moveToFirst()) {
+            while (cursor.moveToNext()) {
+                userOrders.add(new Order(cursor));
+            }
+        }
+        sqLiteHelper.close();
+        cursor.close();
+    }
+
+    /**
      * Configuración de los fragments
      */
     private void setupAdapters() {
+        userOrderAdapter = new UserOrderAdapter(userOrders);
         sandwichListAdapter = new SandwichListAdapter(sandwiches);
         cartListAdapter = new CartListAdapter(sandwichesOrdered);
 
@@ -277,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements
         sandwichListFragment = new SandwichListFragment();
         cartFragment = new CartFragment();
 
+        profileFragment.setUserOrderAdapter(userOrderAdapter);
         sandwichListFragment.setSandwichListAdapter(sandwichListAdapter);
         cartFragment.setCartListAdapter(cartListAdapter);
     }
@@ -330,30 +338,6 @@ public class MainActivity extends AppCompatActivity implements
 
         // Posición por defecto de la Bottom Navigation Bar
         bottomNavigation.setCurrentItem(1);
-    }
-
-    private void setupData() {
-                SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(getApplicationContext());
-                UserDAO userDAO = new UserDAO(sqLiteHelper);
-                SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
-                OrderDAO orderDAO = new OrderDAO(sqLiteHelper);
-
-                Cursor cursor = sandwichDAO.getAllSandwiches();
-                if (cursor.moveToFirst()) {
-                    while (cursor.moveToNext()) {
-                        sandwiches.add(new Sandwich(cursor));
-                    }
-                }
-
-                int userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
-                cursor = orderDAO.getOrderByUserID(userID);
-                if (cursor.moveToFirst()) {
-                    while (cursor.moveToNext()) {
-                        userOrders.add(new Order(cursor));
-                    }
-                }
-                sqLiteHelper.close();
-                cursor.close();
     }
 
     /**

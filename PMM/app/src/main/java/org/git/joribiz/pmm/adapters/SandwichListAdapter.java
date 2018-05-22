@@ -38,8 +38,7 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
         holder.sandwichPhoto.setImageResource(sandwich.getPhotoId());
         holder.sandwichName.setText(sandwich.getName());
         holder.sandwichPrice.setText(
-                String.format(Locale.getDefault(), "%.2f €", sandwich.getPrice())
-        );
+                String.format(Locale.getDefault(), "%.2f €", sandwich.getPrice()));
     }
 
     @Override
@@ -88,8 +87,8 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
 
         ViewHolder(View itemView) {
             super(itemView);
-            sandwichPhoto = itemView.findViewById(R.id.fragment_profile_photo);
-            sandwichName = itemView.findViewById(R.id.fragment_profile_email);
+            sandwichPhoto = itemView.findViewById(R.id.item_sandwich_photo);
+            sandwichName = itemView.findViewById(R.id.item_sandwich_name);
             sandwichPrice = itemView.findViewById(R.id.item_sandwich_price);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

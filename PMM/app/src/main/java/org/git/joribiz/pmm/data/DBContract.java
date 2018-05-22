@@ -93,11 +93,13 @@ public interface DBContract {
         String TABLE_NAME = "\"order\"";
         String KEY_ADDRESS = "address";
         String KEY_DATE = "date";
+        String KEY_PRICE = "price";
         String KEY_USER_ID = "user_id";
 
         String[] KEY_ARRAY = {
                 KEY_ADDRESS,
                 KEY_DATE,
+                KEY_PRICE,
                 KEY_USER_ID
         };
 
@@ -106,6 +108,7 @@ public interface DBContract {
          * _id INTEGER PRIMARY KEY,
          * address TEXT NOT NULL,
          * date TEXT NOT NULL,
+         * price REAL NOT NULL,
          * user_id INTEGER NOT NULL,
          * FOREIGN KEY (user_id) REFERENCES user (_id) ON DELETE CASCADE
          * )
@@ -114,6 +117,7 @@ public interface DBContract {
                 + _ID + INTEGER_TYPE + PRIMARY_KEY + COMA_SEP
                 + KEY_ADDRESS + TEXT_TYPE + NOT_NULL + COMA_SEP
                 + KEY_DATE + TEXT_TYPE + NOT_NULL + COMA_SEP
+                + KEY_PRICE + REAL_TYPE + NOT_NULL + COMA_SEP
                 + KEY_USER_ID + INTEGER_TYPE + NOT_NULL + COMA_SEP
                 + FOREIGN_KEY + "(" + KEY_USER_ID + ")"
                 + REFERENCES + UserEntry.TABLE_NAME + "(" + UserEntry._ID + ")"

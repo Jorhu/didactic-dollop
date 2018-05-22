@@ -32,6 +32,10 @@
     <!-- Strings de ProfileFragment -->
     <string name="user_name">Email</string>
     <string name="user_orders">Your orders</string>
+    <string name="order_name">Order</string>
+    <string name="order_address">Address</string>
+    <string name="order_date">Date</string>
+    <string name="order_price">Price</string>
 
     <!-- Strings de la bottom navigation bar -->
     <string name="menu">Menu</string>

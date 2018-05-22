@@ -34,26 +34,6 @@ public class Sandwich implements DBContract, Parcelable {
         photoId = in.readInt();
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(ingredients);
-        dest.writeFloat(price);
-        dest.writeInt(photoId);
-    }
-
-    public void readFromParcel(Parcel in) {
-        name = in.readString();
-        ingredients = in.readString();
-        price = in.readFloat();
-        photoId = in.readInt();
-    }
-
     public static final Creator<Sandwich> CREATOR = new Creator<Sandwich>() {
         @Override
         public Sandwich createFromParcel(Parcel in) {
@@ -66,15 +46,17 @@ public class Sandwich implements DBContract, Parcelable {
         }
     };
 
-    public ContentValues toContentValues() {
-        ContentValues values = new ContentValues();
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-        values.put(SandwichEntry.KEY_NAME, name);
-        values.put(SandwichEntry.KEY_INGREDIENTS, ingredients);
-        values.put(SandwichEntry.KEY_PRICE, price);
-        values.put(SandwichEntry.KEY_PHOTO_ID, photoId);
-
-        return values;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(ingredients);
+        dest.writeFloat(price);
+        dest.writeInt(photoId);
     }
 
     public String getName() {
@@ -107,5 +89,16 @@ public class Sandwich implements DBContract, Parcelable {
 
     public void setPhotoId(int photoId) {
         this.photoId = photoId;
+    }
+
+    public ContentValues toContentValues() {
+        ContentValues values = new ContentValues();
+
+        values.put(SandwichEntry.KEY_NAME, name);
+        values.put(SandwichEntry.KEY_INGREDIENTS, ingredients);
+        values.put(SandwichEntry.KEY_PRICE, price);
+        values.put(SandwichEntry.KEY_PHOTO_ID, photoId);
+
+        return values;
     }
 }
