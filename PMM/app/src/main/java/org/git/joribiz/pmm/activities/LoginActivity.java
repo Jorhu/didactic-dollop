@@ -69,11 +69,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         // Desactivamos la posibilidad de ir de vuelta a la MainActivity
         moveTaskToBack(true);
-    }
+    }*/
 
     /**
      * La lógica de autenticación se implementa en este método. Comprueba que los datos
@@ -90,7 +90,9 @@ public class LoginActivity extends AppCompatActivity {
         // Ocultamos el teclado del usuario en el caso de que él no lo haya hecho
         InputMethodManager manager = (InputMethodManager)getSystemService(
                 Context.INPUT_METHOD_SERVICE);
-        manager.hideSoftInputFromWindow(passwordText.getWindowToken(), 0);
+        if (manager != null) {
+            manager.hideSoftInputFromWindow(passwordText.getWindowToken(), 0);
+        }
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setIndeterminate(true);
@@ -145,10 +147,9 @@ public class LoginActivity extends AppCompatActivity {
     private void onLoginSuccess(User user) {
         loginButton.setEnabled(true);
         // Volvemos a la actividad principal mandando el email del usuario
-        Intent data = new Intent();
-        data.putExtra("user", user);
-        setResult(RESULT_OK, data);
-        finish();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
     }
 
     /**

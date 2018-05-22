@@ -36,6 +36,24 @@ public class UserDAO implements DBContract.UserEntry {
         );
     }
 
+    public int getUserIDByEmail(String email) {
+        int id = 0;
+        Cursor cursor = sqLiteHelper.getReadableDatabase().query(
+                TABLE_NAME,
+                new String[]{_ID},
+                KEY_EMAIL + "=" + email,
+                null,
+                null,
+                null,
+                null
+        );
+        if (cursor.moveToFirst()) {
+            id = cursor.getInt(cursor.getColumnIndex(_ID));
+        }
+        cursor.close();
+        return id;
+    }
+
     public Cursor getAllUsers() {
         return sqLiteHelper.getReadableDatabase().query(
                 TABLE_NAME,

@@ -29,7 +29,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userEmail = getArguments().getParcelable("name");
+            userEmail = getArguments().getString("email");
         }
     }
 

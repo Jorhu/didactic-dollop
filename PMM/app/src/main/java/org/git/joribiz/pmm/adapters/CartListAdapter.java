@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHolder> {
-    ArrayList<Sandwich> sandwichesOrdered;
+    private ArrayList<Sandwich> sandwichesOrdered;
     private RemoveItemListener removeItemListener;
 
     public CartListAdapter(ArrayList<Sandwich> sandwichesOrdered) {
@@ -69,8 +69,8 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
     public void removeSandwich(int position) {
         sandwichesOrdered.remove(position);
        /* Este método es para notificar que se ha eliminado un item de la lista y hacer uso de las
-        animaciones predeterminadas de RecyclerView */
-        notifyItemRemoved(position);
+       animaciones predeterminadas de RecyclerView */
+       notifyItemRemoved(position);
     }
 
     /**

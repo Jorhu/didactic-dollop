@@ -21,12 +21,15 @@ import org.git.joribiz.pmm.R;
 import org.git.joribiz.pmm.adapters.BottomNavigationAdapter;
 import org.git.joribiz.pmm.adapters.CartListAdapter;
 import org.git.joribiz.pmm.adapters.SandwichListAdapter;
+import org.git.joribiz.pmm.data.OrderDAO;
 import org.git.joribiz.pmm.data.SQLiteHelper;
 import org.git.joribiz.pmm.data.SandwichDAO;
+import org.git.joribiz.pmm.data.UserDAO;
 import org.git.joribiz.pmm.fragments.CartFragment;
 import org.git.joribiz.pmm.fragments.ProfileFragment;
 import org.git.joribiz.pmm.fragments.SandwichDetailsFragment;
 import org.git.joribiz.pmm.fragments.SandwichListFragment;
+import org.git.joribiz.pmm.model.Order;
 import org.git.joribiz.pmm.model.Sandwich;
 import org.git.joribiz.pmm.model.User;
 import org.git.joribiz.pmm.pagers.NoSwipePager;
@@ -65,11 +68,14 @@ public class MainActivity extends AppCompatActivity implements
     // En esta varible se guardará el usuario que ha accedido a la app
     private User user;
 
+    // Para almacenar los bocadillos obtenidos de la base de datos
+    private ArrayList<Sandwich> sandwiches;
+
+    // Para almacenar los pedidos hechos por el usuario obtenidos de la base de datos
+    private ArrayList<Order> userOrders;
+
     // Para preparar el pedido del usuario
     private ArrayList<Sandwich> sandwichesOrdered;
-
-    // Para almacenar los bocadillos obtneidos de la base de datos
-    private ArrayList<Sandwich> sandwiches;
 
     // Para llevar la cuenta del precio del pedido del usuario
     private float orderPrice;
@@ -86,33 +92,34 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         bottomNavigation = findViewById(R.id.activity_main_bottom_navigation);
 
-         /*// Redirigimos al usuario al login
-         Intent intent = new Intent(this, LoginActivity.class);
-         startActivityForResult(intent, REQUEST_USER);*/
-
-        // Insertamos los datos de prueba en la base da datos
-        SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(this);
-        SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
-        sandwichDAO.insertMockData();
-
-        // Consulta a la base de datos de los bocadillos
-        Cursor cursor = sandwichDAO.getAllSandwiches();
-
-        // Obtenemos un array con todos los bocadillos
+        // Inicialización de las variables
+        user = getIntent().getParcelableExtra("user");
+        userOrders = new ArrayList<>();
         sandwiches = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            sandwiches.add(new Sandwich(cursor));
+        sandwichesOrdered = new ArrayList<>();
+        orderPrice = 0;
+
+        SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(getApplicationContext());
+        UserDAO userDAO = new UserDAO(sqLiteHelper);
+        SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
+        OrderDAO orderDAO = new OrderDAO(sqLiteHelper);
+
+        Cursor cursor = sandwichDAO.getAllSandwiches();
+        if (cursor.moveToFirst()) {
+            while (cursor.moveToNext()) {
+                sandwiches.add(new Sandwich(cursor));
+            }
         }
 
-        // Cerramos el cursor y la base de datos
+        int userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
+        cursor = orderDAO.getOrderByUserID(userID);
+        if (cursor.moveToFirst()) {
+            while (cursor.moveToNext()) {
+                userOrders.add(new Order(cursor));
+            }
+        }
         sqLiteHelper.close();
         cursor.close();
-
-
-        // Ponemos el precio del pedido a 0
-        orderPrice = 0;
-        // Instanciamos el array para empezar a realizar el pedido
-        sandwichesOrdered = new ArrayList<>();
 
         // Inicializamos y configuramos los adapters
         setupAdapters();
@@ -123,23 +130,12 @@ public class MainActivity extends AppCompatActivity implements
         // Configuramos la Navigation Bar
         setupViewPager();
         setupBottomNavigation();
+
+
     }
 
     /**
-     * Una vez el usuario se autentifique con éxito, guardaremos su email para identificarlo más
-     * adelante.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_USER) {
-            if (resultCode == RESULT_OK) {
-                user = data.getParcelableExtra("email");
-            }
-        }
-    }
-
-    /**
-     * Controla el comportamiento de la app al pulsar el botón back
+     * Controla el comportamiento de la app al pulsar el botón back.
      */
     @Override
     public void onBackPressed() {
@@ -148,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements
             showingDetails = false;
             viewPager.setCurrentItem(1);
         } else {
+            // Si no, comportamiento normal
             super.onBackPressed();
         }
     }
@@ -176,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onItemClick(View view, final int position) {
         Sandwich sandwich = sandwichListAdapter.getSandwich(position);
-
         // Creamos una nueva instancia de SandwichDetailsFragment
         sandwichDetailsFragment = SandwichDetailsFragment.newInstance(sandwich);
 
@@ -250,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
                 orderPrice = cartListAdapter.calculateTotalPrice();
                 cartFragment.setTotalPriceText(orderPrice);
             }
-        }, 300);
+        }, 200);
     }
 
     /**
@@ -277,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements
      * Configuración de los fragments.
      */
     private void setupFragments() {
-        profileFragment = new ProfileFragment();
+        profileFragment = ProfileFragment.newInstance(user.getEmail());
         sandwichListFragment = new SandwichListFragment();
         cartFragment = new CartFragment();
 
@@ -334,6 +330,30 @@ public class MainActivity extends AppCompatActivity implements
 
         // Posición por defecto de la Bottom Navigation Bar
         bottomNavigation.setCurrentItem(1);
+    }
+
+    private void setupData() {
+                SQLiteHelper sqLiteHelper = SQLiteHelper.getInstance(getApplicationContext());
+                UserDAO userDAO = new UserDAO(sqLiteHelper);
+                SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
+                OrderDAO orderDAO = new OrderDAO(sqLiteHelper);
+
+                Cursor cursor = sandwichDAO.getAllSandwiches();
+                if (cursor.moveToFirst()) {
+                    while (cursor.moveToNext()) {
+                        sandwiches.add(new Sandwich(cursor));
+                    }
+                }
+
+                int userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
+                cursor = orderDAO.getOrderByUserID(userID);
+                if (cursor.moveToFirst()) {
+                    while (cursor.moveToNext()) {
+                        userOrders.add(new Order(cursor));
+                    }
+                }
+                sqLiteHelper.close();
+                cursor.close();
     }
 
     /**
