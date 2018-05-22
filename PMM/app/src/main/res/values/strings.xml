@@ -11,10 +11,6 @@
     <string name="authentication_message">Authenticating…</string>
     <string name="creating_account_message">Creating account…</string>
 
-    <!-- Strings de CartFragment -->
-    <string name="empty_cart">You haven\'t ordered anything yet!</string>
-    <string name="total_price">Total:</string>
-
     <!-- Strings de error del login y del sign up -->
     <string name="error_login">Login failed</string>
     <string name="error_signup">Sign up failed</string>
@@ -28,6 +24,14 @@
     <string name="sandwich_name">Name</string>
     <string name="sandwich_price">Price</string>
     <string name="sandwich_ingredients">Ingredients</string>
+
+    <!-- Strings de CartFragment -->
+    <string name="empty_cart">You haven\'t ordered anything yet!</string>
+    <string name="total_price">Total:</string>
+
+    <!-- Strings de ProfileFragment -->
+    <string name="user_name">Email</string>
+    <string name="user_orders">Your orders</string>
 
     <!-- Strings de la bottom navigation bar -->
     <string name="menu">Menu</string>

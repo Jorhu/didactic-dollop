@@ -95,7 +95,8 @@ public class SignUpActivity extends AppCompatActivity {
                     });
                 } else {
                     userDAO.insertUser(new User(email, password));
-                    onSignUpSuccess(email);
+                    User user = new User(email, password);
+                    onSignUpSuccess(user);
                 }
                 cursor.close();
                 sqLiteHelper.close();
@@ -108,10 +109,10 @@ public class SignUpActivity extends AppCompatActivity {
      * Activa el botón de registro de nuevo y le comunica a LoginActivity que el usuario se ha
      * registrado con éxito.
      */
-    private void onSignUpSuccess(String email) {
+    private void onSignUpSuccess(User user) {
         signUpButton.setEnabled(true);
         Intent data = new Intent();
-        data.putExtra("email", email);
+        data.putExtra("user", user);
         setResult(RESULT_OK, data);
         finish();
     }

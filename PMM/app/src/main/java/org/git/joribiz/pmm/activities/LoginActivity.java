@@ -19,6 +19,7 @@ import org.git.joribiz.pmm.R;
 import org.git.joribiz.pmm.data.DBContract;
 import org.git.joribiz.pmm.data.SQLiteHelper;
 import org.git.joribiz.pmm.data.UserDAO;
+import org.git.joribiz.pmm.model.User;
 
 public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_SIGNUP = 0;
@@ -62,7 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
                 // Si el registro se ha llevado a cabo con éxito, volvemos a la actividad principal
-                onLoginSuccess(data.getStringExtra("email"));
+                User user = data.getParcelableExtra("user");
+                onLoginSuccess(user);
             }
         }
     }
@@ -116,8 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
                     // Comprobación de la contraseña
                 } else if (!cursor.getString(cursor
-                        .getColumnIndex(DBContract.UserEntry.KEY_PASSWORD))
-                        .equals(password)) {
+                        .getColumnIndex(DBContract.UserEntry.KEY_PASSWORD)).equals(password)) {
                     passwordText.post(new Runnable() {
                         @Override
                         public void run() {
@@ -127,7 +128,8 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    onLoginSuccess(email);
+                    User user = new User(cursor);
+                    onLoginSuccess(user);
                 }
                 cursor.close();
                 sqLiteHelper.close();
@@ -140,11 +142,11 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Activa el botón de login de nuevo y envía al usuario a la actividad principal.
      */
-    private void onLoginSuccess(String email) {
+    private void onLoginSuccess(User user) {
         loginButton.setEnabled(true);
         // Volvemos a la actividad principal mandando el email del usuario
         Intent data = new Intent();
-        data.putExtra("email", email);
+        data.putExtra("user", user);
         setResult(RESULT_OK, data);
         finish();
     }

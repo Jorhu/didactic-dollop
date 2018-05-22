@@ -88,8 +88,8 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
 
         ViewHolder(View itemView) {
             super(itemView);
-            sandwichPhoto = itemView.findViewById(R.id.item_sandwich_photo);
-            sandwichName = itemView.findViewById(R.id.item_sandwich_name);
+            sandwichPhoto = itemView.findViewById(R.id.fragment_profile_photo);
+            sandwichName = itemView.findViewById(R.id.fragment_profile_email);
             sandwichPrice = itemView.findViewById(R.id.item_sandwich_price);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

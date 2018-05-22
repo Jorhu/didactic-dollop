@@ -53,7 +53,7 @@ public class CartFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.fragment_cart_recycler);
         FloatingActionButton checkoutFAB = view.findViewById(R.id.fragment_cart_checkoutFAB);
         totalPriceText = view.findViewById(R.id.fragment_cart_price);
 

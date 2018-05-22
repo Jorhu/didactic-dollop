@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements
         CartListAdapter.RemoveItemListener,
         SandwichDetailsFragment.AddButtonClickListener,
         CartFragment.CheckoutButtonClickListener{
+    // TODO: Refactorizar todas las constantes a su propia clase estática
     private static final int REQUEST_USER = 0;
 
     // BottomNavigation Bar, de una librería externa
