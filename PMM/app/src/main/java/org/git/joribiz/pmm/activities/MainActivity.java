@@ -28,6 +28,7 @@ import org.git.joribiz.pmm.fragments.ProfileFragment;
 import org.git.joribiz.pmm.fragments.SandwichDetailsFragment;
 import org.git.joribiz.pmm.fragments.SandwichListFragment;
 import org.git.joribiz.pmm.model.Sandwich;
+import org.git.joribiz.pmm.model.User;
 import org.git.joribiz.pmm.pagers.NoSwipePager;
 
 import java.util.ArrayList;
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements
     private SandwichListAdapter sandwichListAdapter;
     private CartListAdapter cartListAdapter;
 
-    // En esta varible se guardará el email del usuario que ha accedido a la app
-    private String userEmail;
+    // En esta varible se guardará el usuario que ha accedido a la app
+    private User user;
 
     // Para preparar el pedido del usuario
     private ArrayList<Sandwich> sandwichesOrdered;
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_USER) {
             if (resultCode == RESULT_OK) {
-                userEmail = data.getStringExtra("email");
+                user = data.getParcelableExtra("email");
             }
         }
     }
