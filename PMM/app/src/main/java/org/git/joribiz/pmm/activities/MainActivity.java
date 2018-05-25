@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // En esta varible se guardará el usuario que ha accedido a la app
     private User user;
+    private int userID;
 
     // Para almacenar los bocadillos obtenidos de la base de datos
     private ArrayList<Sandwich> sandwiches;
@@ -233,7 +234,10 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onCheckoutButtonClick() {
-        // TODO
+        Intent intent = new Intent(this, CheckoutActivity.class);
+        intent.putParcelableArrayListExtra("sandwiches", sandwichesOrdered);
+        intent.putExtra("price", orderPrice);
+        intent.putExtra("ID", userID);
     }
 
     /**
@@ -245,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements
         SandwichDAO sandwichDAO = new SandwichDAO(sqLiteHelper);
         OrderDAO orderDAO = new OrderDAO(sqLiteHelper);
 
+        // Consulta de los bocadillos que constan en la base de datos
         Cursor cursor = sandwichDAO.getAllSandwiches();
         if (cursor.moveToFirst()) {
             while (cursor.moveToNext()) {
@@ -252,7 +257,8 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        int userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
+        // Consulta del ID del usuario registrado
+        userID = userDAO.getUserIDByEmail(String.format("\"%s\"", user.getEmail()));
         cursor = orderDAO.getOrderByUserID(userID);
         if (cursor.moveToFirst()) {
             while (cursor.moveToNext()) {

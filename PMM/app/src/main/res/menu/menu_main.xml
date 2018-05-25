@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/about"
-        android:title="@string/about"
+        android:title="@string/menu_about"
         android:icon="@mipmap/baseline_contact_support_white_24"
         app:showAsAction="never"/>
 

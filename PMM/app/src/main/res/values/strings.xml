@@ -20,6 +20,13 @@
     <string name="error_password">Between 4 and 10 alphanumeric characters</string>
     <string name="error_password_not_correct">Password not correct</string>
 
+    <!-- Strings de CheckoutActivity -->
+
+
+    <!-- Strings de AboutActivity -->
+    <string name="about">Fuck my life</string>
+    <string name="app_version">1.0.0</string>
+
     <!-- Strings de SandwichDetailsFragment y de item_sandwich.xml -->
     <string name="sandwich_name">Name</string>
     <string name="sandwich_price">Price</string>
@@ -42,6 +49,7 @@
     <string name="my_profile">My profile</string>
     <string name="my_order">My order</string>
 
+    <!-- Strings de menu_main -->
+    <string name="menu_about">About…</string>
 
-    <string name="about">About…</string>
 </resources>
